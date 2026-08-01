@@ -1,0 +1,23 @@
+{
+  "name": "tui-agent",
+  "version": "1.0.0",
+  "main": "agent.mjs",
+  "scripts": {
+    "start": "node agent.mjs",
+    "selftest": "node agent.mjs --selftest",
+    "build": "ncc build agent.mjs -o dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "单文件命令行编程 agent（Vercel AI SDK）",
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.27",
+    "ai": "^7.0.47",
+    "zod": "^3.25.76"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@vercel/ncc": "^0.44.1"
+  }
+}
