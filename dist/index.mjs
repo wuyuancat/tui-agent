@@ -791,9 +791,9 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
  * tui-agent.mjs — 单文件命令行编程 agent（Vercel AI SDK v7，最小实现）
  *
  * 用法:
- *   export OPENAI_API_KEY=sk-...            # 必填
- *   export OPENAI_BASE_URL=...              # 可选: 兼容 OpenAI 的端点(DeepSeek/OpenRouter/Ollama)
- *   export OPENAI_MODEL=gpt-4o-mini         # 可选: 默认 gpt-4o-mini
+ *   export OPENROUTER_API_KEY=sk-or-...     # 默认走 OpenRouter（也可用 OPENAI_API_KEY）
+ *   export OPENAI_BASE_URL=...              # 可选: 覆盖端点(DeepSeek/Ollama/OpenAI 等)
+ *   export OPENAI_MODEL=...                 # 可选: 覆盖模型名(默认 deepseek/deepseek-chat)
  *
  *   node agent.mjs                          # 交互模式 (TUI)
  *   node agent.mjs "给当前目录写个 README"   # 一次性任务模式
@@ -853,11 +853,13 @@ const SYSTEM = `你是运行在用户终端里的编程 agent，用中文、简�
 4. 直接回答与工具调用都允许；不要编造文件内容，写前先读`
 
 // ── 一次生成（SDK 自动循环调用工具直到给出最终答案） ──────────────
+// 默认走 OpenRouter：baseURL 指向其 OpenAI 兼容端点 /api/v1；
+// 可用 OPENAI_BASE_URL / OPENAI_MODEL 覆盖成任何兼容服务与模型。
 async function ask(messages) {
   const model = (0,_ai_sdk_openai__WEBPACK_IMPORTED_MODULE_7__/* .createOpenAI */ .ry)({
-    apiKey: process.env.OPENAI_API_KEY,
-    baseURL: process.env.OPENAI_BASE_URL,
-  }).chat(process.env.OPENAI_MODEL || 'gpt-4o-mini') // .chat() = chat/completions，兼容 DeepSeek/OpenRouter/Ollama 等端点
+    apiKey: process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL || 'https://openrouter.ai/api/v1',
+  }).chat(process.env.OPENAI_MODEL || 'deepseek/deepseek-chat') // .chat() = chat/completions，兼容 DeepSeek/OpenRouter/Ollama 等端点
   const res = await (0,ai__WEBPACK_IMPORTED_MODULE_8__/* .generateText */ .Df)({
     model, system: SYSTEM, messages, tools,
     stopWhen: ({ steps }) => steps.length >= 12, // 工具循环上限；模型不再调用工具时自动结束
@@ -878,8 +880,8 @@ if (process.argv.includes('--selftest')) {
 }
 
 // ── 主循环 ──────────────────────────────────────────────────────
-if (!process.env.OPENAI_API_KEY) {
-  console.error(paint('red', '缺少 OPENAI_API_KEY。可用 --selftest 无 key 自测。'))
+if (!process.env.OPENAI_API_KEY && !process.env.OPENROUTER_API_KEY) {
+  console.error(paint('red', '缺少 API key。设置 OPENROUTER_API_KEY（默认走 OpenRouter）或 OPENAI_API_KEY。可用 --selftest 无 key 自测。'))
   process.exit(1)
 }
 const history = [] // 仅存对话文本，工具细节每次重新执行

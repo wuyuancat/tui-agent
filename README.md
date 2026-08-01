@@ -13,11 +13,12 @@
 
 | 变量 | 说明 | 默认 |
 |---|---|---|
-| `OPENAI_API_KEY` | API key（必填） | — |
-| `OPENAI_BASE_URL` | 兼容端点（DeepSeek / OpenRouter / Ollama 等） | OpenAI 官方 |
-| `OPENAI_MODEL` | 模型名 | `gpt-4o-mini` |
+| `OPENROUTER_API_KEY` | API key（默认走 OpenRouter） | — |
+| `OPENAI_API_KEY` | 备选 key（未设 OPENROUTER_API_KEY 时使用） | — |
+| `OPENAI_BASE_URL` | 兼容端点（DeepSeek / OpenAI / Ollama 等） | `https://openrouter.ai/api/v1` |
+| `OPENAI_MODEL` | 模型名 | `deepseek/deepseek-chat` |
 
-> 使用 `createOpenAI(...).chat(modelId)` 走 `/chat/completions`，因此任何 OpenAI 兼容服务均可接入。
+> 默认使用 OpenRouter（`https://openrouter.ai/api/v1`）。通过 `createOpenAI(...).chat(modelId)` 走 `/chat/completions`，因此任何 OpenAI 兼容服务均可接入——设置 `OPENAI_BASE_URL` + `OPENAI_MODEL` 即可切换（如 `https://api.deepseek.com` + `deepseek-chat`，或 `http://localhost:11434/v1` + `qwen2.5-coder:14b`）。
 
 ## 使用
 
